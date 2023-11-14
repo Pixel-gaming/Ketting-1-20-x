@@ -112,6 +112,8 @@ tasks.register('downloadServerRaw', Download) {
     quiet true
 }
 
+tasks.register('createChangelog'){}//setup fix?
+
 subprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'eclipse'
