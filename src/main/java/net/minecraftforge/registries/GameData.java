@@ -7,6 +7,7 @@ package net.minecraftforge.registries;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
@@ -22,9 +23,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-
-import it.unimi.dsi.fastutil.objects.Object2IntLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import net.minecraft.core.IdMapper;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
@@ -71,13 +69,12 @@ import org.jetbrains.annotations.Nullable;
 /**
  * INTERNAL ONLY
  * MODDERS SHOULD HAVE NO REASON TO USE THIS CLASS
- * <p>Use the public {@link IForgeRegistry} and {@link ForgeRegistries} APIs to get the data</p>
  */
 @ApiStatus.Internal
 public class GameData
 {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Marker REGISTRIES = ForgeRegistry.REGISTRIES;
+    private static Marker REGISTRIES = ForgeRegistry.REGISTRIES;
     private static final int MAX_VARINT = Integer.MAX_VALUE - 1; //We were told it is their intention to have everything in a reg be unlimited, so assume that until we find cases where it isnt.
 
     private static final ResourceLocation BLOCK_TO_ITEM = new ResourceLocation("minecraft:blocktoitemmap");
@@ -371,9 +368,10 @@ public class GameData
         @SuppressWarnings("unused")
         void remove(I key)
         {
-            boolean hadId = this.tToId.containsKey(key);
-            int prev = this.tToId.removeInt(key);
-            if (hadId) {
+            @SuppressWarnings("deprecation")
+            Integer prev = this.tToId.remove(key);
+            if (prev != null)
+            {
                 this.idToT.set(prev, null);
             }
         }
@@ -423,17 +421,22 @@ public class GameData
         @Override
         public void onCreate(IForgeRegistryInternal<Block> owner, RegistryManager stage)
         {
-            final ClearableObjectIntIdentityMap<BlockState> idMap = new ClearableObjectIntIdentityMap<>()
+            final ClearableObjectIntIdentityMap<BlockState> idMap = new ClearableObjectIntIdentityMap<BlockState>()
             {
                 @SuppressWarnings("deprecation")
                 @Override
                 public int getId(BlockState key)
                 {
-                    return this.tToId.containsKey(key) ? this.tToId.getInt(key) : -1;
+                    Integer integer = (Integer)this.tToId.get(key);
+                    // There are some cases where this map is queried to serialize a state that is valid,
+                    //but somehow not in this list, so attempt to get real metadata. Doing this hear saves us 7 patches
+                    //if (integer == null && key != null)
+                    //    integer = this.identityMap.get(key.getBlock().getStateFromMeta(key.getBlock().getMetaFromState(key)));
+                    return integer == null ? -1 : integer.intValue();
                 }
             };
             owner.setSlaveMap(BLOCKSTATE_TO_ID, idMap);
-            owner.setSlaveMap(BLOCK_TO_ITEM, new HashMap<>());
+            owner.setSlaveMap(BLOCK_TO_ITEM, Maps.newHashMap());
         }
 
         @Override
@@ -594,11 +597,11 @@ public class GameData
 
         if (isLocalWorld)
         {
-            ResourceLocation[] missingRegs = snapshot.keySet().stream().filter(name -> !RegistryManager.ACTIVE.registries.containsKey(name)).toArray(ResourceLocation[]::new);
-            if (missingRegs.length > 0)
+            List<ResourceLocation> missingRegs = snapshot.keySet().stream().filter(name -> !RegistryManager.ACTIVE.registries.containsKey(name)).collect(Collectors.toList());
+            if (missingRegs.size() > 0)
             {
                 String header = "Forge Mod Loader detected missing/unknown registrie(s).\n\n" +
-                        "There are " + missingRegs.length + " missing registries in this save.\n" +
+                        "There are " + missingRegs.size() + " missing registries in this save.\n" +
                         "If you continue the missing registries will get removed.\n" +
                         "This may cause issues, it is advised that you create a world backup before continuing.\n\n";
 
@@ -614,13 +617,13 @@ public class GameData
 
         RegistryManager STAGING = new RegistryManager();
 
-        final Map<ResourceLocation, Map<ResourceLocation, IdMappingEvent.IdRemapping>> remaps = new HashMap<>();
-        final LinkedHashMap<ResourceLocation, Object2IntMap<ResourceLocation>> missing = new LinkedHashMap<>();
+        final Map<ResourceLocation, Map<ResourceLocation, IdMappingEvent.IdRemapping>> remaps = Maps.newHashMap();
+        final LinkedHashMap<ResourceLocation, Map<ResourceLocation, Integer>> missing = Maps.newLinkedHashMap();
         // Load the snapshot into the "STAGING" registry
         snapshot.forEach((key, value) ->
         {
-            remaps.put(key, new LinkedHashMap<>());
-            missing.put(key, new Object2IntLinkedOpenHashMap<>());
+            remaps.put(key, Maps.newLinkedHashMap());
+            missing.put(key, Maps.newLinkedHashMap());
             loadPersistentDataToStagingRegistry(RegistryManager.ACTIVE, STAGING, remaps.get(key), missing.get(key), key, value);
         });
 
@@ -631,12 +634,11 @@ public class GameData
             Multimap<ResourceLocation, ResourceLocation> defaulted = ArrayListMultimap.create();
             Multimap<ResourceLocation, ResourceLocation> failed = ArrayListMultimap.create();
 
-            missing.entrySet().stream().filter(e -> !e.getValue().isEmpty()).forEach(m ->
+            missing.entrySet().stream().filter(e -> e.getValue().size() > 0).forEach(m ->
             {
                 ResourceLocation name = m.getKey();
                 ForgeRegistry<?> reg = STAGING.getRegistry(name);
-                Object2IntMap<ResourceLocation> missingIds = m.getValue();
-                MissingMappingsEvent event = reg.getMissingEvent(name, missingIds);
+                MissingMappingsEvent event = reg.getMissingEvent(name, m.getValue());
                 MinecraftForge.EVENT_BUS.post(event);
 
                 List<MissingMappingsEvent.Mapping<?>> lst = event.getAllMappings(reg.getRegistryKey()).stream()
@@ -654,7 +656,7 @@ public class GameData
                         .filter(e -> e.action == MissingMappingsEvent.Action.FAIL)
                         .forEach(fail -> failed.put(name, fail.key));
 
-                processMissing(name, STAGING, event, missingIds, remaps.get(name), defaulted.get(name), failed.get(name), !isLocalWorld);
+                processMissing(name, STAGING, event, m.getValue(), remaps.get(name), defaulted.get(name), failed.get(name), !isLocalWorld);
             });
 
             if (!defaulted.isEmpty() && !isLocalWorld)
@@ -671,7 +673,7 @@ public class GameData
                 defaulted.asMap().forEach((name, entries) ->
                 {
                     buf.append("Missing ").append(name).append(":\n");
-                    entries.stream().sorted(ResourceLocation::compareNamespaced).forEach(rl -> buf.append("    ").append(rl).append("\n"));
+                    entries.stream().sorted((o1, o2) -> o1.compareNamespaced(o2)).forEach(rl -> buf.append("    ").append(rl).append("\n"));
                     buf.append("\n");
                 });
 
@@ -729,7 +731,7 @@ public class GameData
     }
 
     //Has to be split because of generics, Yay!
-    private static <T> void loadPersistentDataToStagingRegistry(RegistryManager pool, RegistryManager to, Map<ResourceLocation, IdMappingEvent.IdRemapping> remaps, Object2IntMap<ResourceLocation> missing, ResourceLocation name, ForgeRegistry.Snapshot snap)
+    private static <T> void loadPersistentDataToStagingRegistry(RegistryManager pool, RegistryManager to, Map<ResourceLocation, IdMappingEvent.IdRemapping> remaps, Map<ResourceLocation, Integer> missing, ResourceLocation name, ForgeRegistry.Snapshot snap)
     {
         ForgeRegistry<T> active  = pool.getRegistry(name);
         if (active == null)
@@ -741,7 +743,7 @@ public class GameData
     }
 
     //Another bouncer for generic reasons
-    private static <T> void processMissing(ResourceLocation name, RegistryManager STAGING, MissingMappingsEvent e, Object2IntMap<ResourceLocation> missing, Map<ResourceLocation, IdMappingEvent.IdRemapping> remaps, Collection<ResourceLocation> defaulted, Collection<ResourceLocation> failed, boolean injectNetworkDummies)
+    private static <T> void processMissing(ResourceLocation name, RegistryManager STAGING, MissingMappingsEvent e, Map<ResourceLocation, Integer> missing, Map<ResourceLocation, IdMappingEvent.IdRemapping> remaps, Collection<ResourceLocation> defaulted, Collection<ResourceLocation> failed, boolean injectNetworkDummies)
     {
         List<MissingMappingsEvent.Mapping<T>> mappings = e.getAllMappings(ResourceKey.createRegistryKey(name));
         ForgeRegistry<T> active = RegistryManager.ACTIVE.getRegistry(name);
@@ -753,9 +755,9 @@ public class GameData
     {
         ForgeRegistry<T> frozen = RegistryManager.FROZEN.getRegistry(name);
         ForgeRegistry<T> newRegistry = STAGING.getRegistry(name, RegistryManager.FROZEN);
-        Object2IntMap<ResourceLocation> _new = new Object2IntLinkedOpenHashMap<>();
+        Map<ResourceLocation, Integer> _new = Maps.newLinkedHashMap();
         frozen.getKeys().stream().filter(key -> !newRegistry.containsKey(key)).forEach(key -> _new.put(key, frozen.getID(key)));
-        newRegistry.loadIds(_new, frozen.getOverrideOwners(), new Object2IntLinkedOpenHashMap<>(), remaps, frozen, name);
+        newRegistry.loadIds(_new, frozen.getOverrideOwners(), Maps.newLinkedHashMap(), remaps, frozen, name);
     }
 
     /**
@@ -774,7 +776,7 @@ public class GameData
         String oldPrefix = index == -1 ? "" : name.substring(0, index).toLowerCase(Locale.ROOT);
         name = index == -1 ? name : name.substring(index + 1);
         String prefix = ModLoadingContext.get().getActiveNamespace();
-        if (warnOverrides && !oldPrefix.equals(prefix) && !oldPrefix.isEmpty())
+        if (warnOverrides && !oldPrefix.equals(prefix) && oldPrefix.length() > 0)
         {
             LogManager.getLogger().debug("Mod `{}` attempting to register `{}` to the namespace `{}`. This could be intended, but likely means an EventBusSubscriber without a modid.", prefix, name, oldPrefix);
             prefix = oldPrefix;

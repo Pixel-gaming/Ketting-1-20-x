@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -19,16 +20,12 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntRBTreeMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.tags.TagKey;
@@ -59,12 +56,9 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * Internal - use the public {@link IForgeRegistry} and {@link ForgeRegistries} APIs to get the data
- */
 @ApiStatus.Internal
 public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegistryModifiable<V> {
-    public static final Marker REGISTRIES = MarkerManager.getMarker("REGISTRIES");
+    public static Marker REGISTRIES = MarkerManager.getMarker("REGISTRIES");
     private static final Marker REGISTRYDUMP = MarkerManager.getMarker("REGISTRYDUMP");
     private static final Logger LOGGER = LogManager.getLogger();
     private final RegistryManager stage;
@@ -82,7 +76,7 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
     private final BakeCallback<V> bake;
     private final MissingFactory<V> missing;
     private final BitSet availabilityMap;
-    private final IntSet blocked = new IntOpenHashSet();
+    private final Set<Integer> blocked = new HashSet<>();
     private final Multimap<ResourceLocation, V> overrides = ArrayListMultimap.create();
     private final Map<ResourceLocation, Holder.Reference<V>> delegatesByName = new HashMap<>();
     private final Map<V, Holder.Reference<V>> delegatesByValue = new HashMap<>();
@@ -714,12 +708,12 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
 
     private record DumpRow(String id, String key, String value) {}
 
-    public void loadIds(Object2IntMap<ResourceLocation> ids, Map<ResourceLocation, String> overrides, Object2IntMap<ResourceLocation> missing, Map<ResourceLocation, IdMappingEvent.IdRemapping> remapped, ForgeRegistry<V> old, ResourceLocation name) {
+    public void loadIds(Map<ResourceLocation, Integer> ids, Map<ResourceLocation, String> overrides, Map<ResourceLocation, Integer> missing, Map<ResourceLocation, IdMappingEvent.IdRemapping> remapped, ForgeRegistry<V> old, ResourceLocation name) {
         Map<ResourceLocation, String> ovs = new HashMap<>(overrides);
-        for (Object2IntMap.Entry<ResourceLocation> entry : ids.object2IntEntrySet()) {
+        for (Map.Entry<ResourceLocation, Integer> entry : ids.entrySet()) {
             ResourceLocation itemName = entry.getKey();
 
-            int newId = entry.getIntValue();
+            int newId = entry.getValue();
             int currId = old.getIDRaw(itemName);
 
             if (currId == -1) {
@@ -838,10 +832,10 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
     }
 
     public static class Snapshot {
-        private static final Comparator<ResourceLocation> sorter = ResourceLocation::compareNamespaced;
-        public final Object2IntMap<ResourceLocation> ids = new Object2IntRBTreeMap<>(sorter);
+        private static final Comparator<ResourceLocation> sorter = (a,b) -> a.compareNamespaced(b);
+        public final Map<ResourceLocation, Integer> ids = new TreeMap<>(sorter);
         public final Map<ResourceLocation, ResourceLocation> aliases = new TreeMap<>(sorter);
-        public final IntSet blocked = new IntRBTreeSet();
+        public final Set<Integer> blocked = new TreeSet<>();
         public final Map<ResourceLocation, String> overrides = new TreeMap<>(sorter);
         private FriendlyByteBuf binary = null;
 
@@ -849,16 +843,16 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
             CompoundTag data = new CompoundTag();
 
             ListTag ids = new ListTag();
-            this.ids.object2IntEntrySet().forEach(e -> {
+            this.ids.entrySet().stream().forEach(e -> {
                 CompoundTag tag = new CompoundTag();
                 tag.putString("K", e.getKey().toString());
-                tag.putInt("V", e.getIntValue());
+                tag.putInt("V", e.getValue());
                 ids.add(tag);
             });
             data.put("ids", ids);
 
             ListTag aliases = new ListTag();
-            this.aliases.entrySet().forEach(e -> {
+            this.aliases.entrySet().stream().forEach(e -> {
                 CompoundTag tag = new CompoundTag();
                 tag.putString("K", e.getKey().toString());
                 tag.putString("V", e.getValue().toString());
@@ -867,7 +861,7 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
             data.put("aliases", aliases);
 
             ListTag overrides = new ListTag();
-            this.overrides.entrySet().forEach(e -> {
+            this.overrides.entrySet().stream().forEach(e -> {
                 CompoundTag tag = new CompoundTag();
                 tag.putString("K", e.getKey().toString());
                 tag.putString("V", e.getValue());
@@ -875,7 +869,7 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
             });
             data.put("overrides", overrides);
 
-            int[] blocked = this.blocked.intStream().sorted().toArray();
+            int[] blocked = this.blocked.stream().mapToInt(x->x).sorted().toArray();
             data.putIntArray("blocked", blocked);
 
             return data;
@@ -938,14 +932,14 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
     }
 
     @SuppressWarnings("unchecked")
-    public MissingMappingsEvent getMissingEvent(ResourceLocation name, Object2IntMap<ResourceLocation> map) {
+    public MissingMappingsEvent getMissingEvent(ResourceLocation name, Map<ResourceLocation, Integer> map) {
         List<MissingMappingsEvent.Mapping<V>> lst = new ArrayList<>();
         ForgeRegistry<V> pool = RegistryManager.ACTIVE.getRegistry(name);
-        map.object2IntEntrySet().forEach(entry -> lst.add(new MissingMappingsEvent.Mapping<>(this, pool, entry.getKey(), entry.getIntValue())));
+        map.forEach((rl, id) -> lst.add(new MissingMappingsEvent.Mapping<>(this, pool, rl, id)));
         return new MissingMappingsEvent(ResourceKey.createRegistryKey(name), this, (Collection<MissingMappingsEvent.Mapping<?>>) (Collection<?>) lst);
     }
 
-    void processMissingEvent(ResourceLocation name, ForgeRegistry<V> pool, List<MissingMappingsEvent.Mapping<V>> mappings, Object2IntMap<ResourceLocation> missing, Map<ResourceLocation, IdMappingEvent.IdRemapping> remaps, Collection<ResourceLocation> defaulted, Collection<ResourceLocation> failed, boolean injectNetworkDummies) {
+    void processMissingEvent(ResourceLocation name, ForgeRegistry<V> pool, List<MissingMappingsEvent.Mapping<V>> mappings, Map<ResourceLocation, Integer> missing, Map<ResourceLocation, IdMappingEvent.IdRemapping> remaps, Collection<ResourceLocation> defaulted, Collection<ResourceLocation> failed, boolean injectNetworkDummies) {
         LOGGER.debug(REGISTRIES,"Processing missing event for {}:", name);
         int ignored = 0;
 
@@ -958,7 +952,7 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
                 ResourceLocation newName = pool.getKey(remap.target);
                 LOGGER.debug(REGISTRIES,"  Remapping {} -> {}.", remap.key, newName);
 
-                missing.removeInt(remap.key);
+                missing.remove(remap.key);
                 //I don't think this will work, but I dont think it ever worked.. the item is already in the map with a different id... we want to fix that..
                 int realId = this.add(remap.id, newName, remap.target);
                 if (realId != remap.id)
