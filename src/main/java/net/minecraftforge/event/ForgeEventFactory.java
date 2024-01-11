@@ -109,7 +109,6 @@ import net.minecraftforge.event.entity.living.LivingConversionEvent;
 import net.minecraftforge.event.entity.living.LivingDestroyBlockEvent;
 import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHealEvent;
 import net.minecraftforge.event.entity.living.LivingPackSizeEvent;
 import net.minecraftforge.event.entity.living.LivingSwapItemsEvent;
@@ -827,9 +826,5 @@ public class ForgeEventFactory {
 
     public static void onEntityEnterSection(Entity entity, long packedOldPos, long packedNewPos) {
         post(new EntityEvent.EnteringSection(entity, packedOldPos, packedNewPos));
-    }
-
-    public static LivingFallEvent onLivingFall(LivingEntity entity, float distance, float damageMultiplier) {
-        return fire(new LivingFallEvent(entity, distance, damageMultiplier));
     }
 }
