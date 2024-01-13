@@ -438,11 +438,11 @@
 -               if (blockstate.getBlock() instanceof TntBlock) {
 -                  TntBlock.explode(level, blockpos);
 -                  level.removeBlock(blockpos, false);
-+               if (blockstate.isFlammable(level, blockpos, p_123412_.state().getValue(DispenserBlock.FACING).getOpposite())) {
++               if (blockstate.isFlammable(level, blockpos, p_123412_.getBlockState().getValue(DispenserBlock.FACING).getOpposite())) {
 +                  if (blockstate.getBlock() instanceof TntBlock) {
 +                     // CraftBukkit - TNTPrimeEvent
 +                     if (org.bukkit.craftbukkit.v1_20_R2.event.CraftEventFactory.callTNTPrimeEvent(level, blockpos, org.bukkit.event.block.TNTPrimeEvent.PrimeCause.DISPENSER, null, p_123412_.pos())) {
-+                        blockstate.onCaughtFire(level, blockpos, p_123412_.state().getValue(DispenserBlock.FACING).getOpposite(), null);
++                        blockstate.onCaughtFire(level, blockpos, p_123412_.getBlockState().getValue(DispenserBlock.FACING).getOpposite(), null);
 +                        level.removeBlock(blockpos, false);
 +                     }
 +                  } else {
