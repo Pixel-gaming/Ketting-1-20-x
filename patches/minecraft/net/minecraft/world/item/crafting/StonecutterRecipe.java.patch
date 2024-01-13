@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/StonecutterRecipe.java
 +++ b/net/minecraft/world/item/crafting/StonecutterRecipe.java
-@@ -17,4 +_,16 @@
+@@ -18,4 +_,16 @@
     public ItemStack getToastSymbol() {
        return new ItemStack(Blocks.STONECUTTER);
     }

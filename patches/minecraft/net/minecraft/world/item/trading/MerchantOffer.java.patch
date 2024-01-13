@@ -43,7 +43,7 @@
  
     public MerchantOffer(CompoundTag p_45351_) {
        this.baseCostA = ItemStack.of(p_45351_.getCompound("buy"));
-@@ -89,8 +_,9 @@
+@@ -76,8 +_,9 @@
           return ItemStack.EMPTY;
        } else {
           int i = this.baseCostA.getCount();
@@ -54,7 +54,7 @@
        }
     }
  
-@@ -194,7 +_,7 @@
+@@ -181,7 +_,7 @@
           return true;
        } else {
           ItemStack itemstack = p_45366_.copy();
@@ -63,7 +63,7 @@
              itemstack.setDamageValue(itemstack.getDamageValue());
           }
  
-@@ -206,7 +_,11 @@
+@@ -193,7 +_,11 @@
        if (!this.satisfiedBy(p_45362_, p_45363_)) {
           return false;
        } else {
