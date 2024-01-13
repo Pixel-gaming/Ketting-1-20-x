@@ -27,7 +27,7 @@
 [![spigot-version][]][spigot-commit]
 
 at commit (done): 374dbc7a
-maybe todo commits until 1.20.1:
+maybe todo commits for build/fmlloader system until 1.20.1:
 - e34090c8
 - e00de1a3
 - 2332ecf9
@@ -35,6 +35,12 @@ maybe todo commits until 1.20.1:
 - ab544a78
 - aff05a4c
 - 374dbc7a
+- 05c88ae3
+- 516b35ce
+- af6e8482
+
+unreverted commits:
+- dd139115
 
 # Ketting
 
