@@ -12,7 +12,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.server.TickTask;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraftforge.common.loot.LootModifierManager;
 import net.minecraftforge.common.util.FakePlayerFactory;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -102,6 +101,7 @@ public class ForgeInternalHandler {
         ConfigCommand.register(event.getDispatcher());
     }
 
+    /*
     private static LootModifierManager INSTANCE;
 
     @SubscribeEvent
@@ -111,10 +111,11 @@ public class ForgeInternalHandler {
     }
 
     static LootModifierManager getLootModifierManager() {
-        if (INSTANCE == null)
+        if(INSTANCE == null)
             throw new IllegalStateException("Can not retrieve LootModifierManager until resources have loaded once.");
         return INSTANCE;
     }
+    */
 
     @SubscribeEvent
     public void resourceReloadListeners(AddReloadListenerEvent event) {

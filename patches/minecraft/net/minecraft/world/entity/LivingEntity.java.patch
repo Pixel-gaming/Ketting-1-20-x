@@ -486,7 +486,7 @@
 +
 +         // CraftBukkit - Moved into damageEntity0(DamageSource, float)
 +         if (false && p_21017_ > 0.0F && this.isDamageSourceBlocked(p_21016_)) {
-+            var ev = net.minecraftforge.event.ForgeEventFactory.onShieldBlock(this, p_21016_, p_21017_);
++            var ev = net.minecraftforge.common.ForgeHooks.onShieldBlock(this, p_21016_, p_21017_);
 +            if(!ev.isCanceled()) {
 +               if(ev.shieldTakesDamage()) this.hurtCurrentlyUsedShield(p_21017_);
 +               f1 = ev.getBlockedDamage();
@@ -1152,7 +1152,7 @@
        ItemStack itemstack = this.getItemBySlot(EquipmentSlot.OFFHAND);
 -      this.setItemSlot(EquipmentSlot.OFFHAND, this.getItemBySlot(EquipmentSlot.MAINHAND));
 -      this.setItemSlot(EquipmentSlot.MAINHAND, itemstack);
-+      var event = net.minecraftforge.event.ForgeEventFactory.onLivingSwapHandItems(this);
++      var event = net.minecraftforge.common.ForgeHooks.onLivingSwapHandItems(this);
 +      if (event.isCanceled()) return;
 +      this.setItemSlot(EquipmentSlot.OFFHAND, event.getItemSwappedToOffHand());
 +      this.setItemSlot(EquipmentSlot.MAINHAND, event.getItemSwappedToMainHand());
