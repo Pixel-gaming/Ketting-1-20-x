@@ -385,7 +385,8 @@
 +   @Nullable
 +   public Entity changeDimension(ServerLevel p_9180_, net.minecraftforge.common.util.ITeleporter teleporter, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
 +      // CraftBukkit end
-+      if (net.minecraftforge.event.ForgeEventFactory.onTravelToDimension(this, p_9180_.dimension())) return null;
++      if (!net.minecraftforge.event.ForgeEventFactory.onTravelToDimension(this, p_9180_.dimension()))
++         return null;
 +      if (this.isSleeping()) return this; // CraftBukkit - SPIGOT-3154
 +      // this.isChangingDimension = true; // CraftBukkit - Moved down and into PlayerList#changeDimension
        ServerLevel serverlevel = this.serverLevel();
@@ -999,8 +1000,8 @@
 +      /* CraftBukkit start - replace with bukkit handling for multi-world
        if (p_9000_ == this.level()) {
           this.connection.teleport(p_9001_, p_9002_, p_9003_, p_9004_, p_9005_);
-       } else {
-+         if (net.minecraftforge.event.ForgeEventFactory.onTravelToDimension(this, p_9000_.dimension())) return;
+-      } else {
++      } else if (!net.minecraftforge.event.ForgeEventFactory.onTravelToDimension(this, p_9000_.dimension())) {
           ServerLevel serverlevel = this.serverLevel();
           LevelData leveldata = p_9000_.getLevelData();
           this.connection.send(new ClientboundRespawnPacket(this.createCommonSpawnInfo(p_9000_), (byte)3));
