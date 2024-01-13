@@ -42,13 +42,13 @@
 +               continue;
 +            }
              RecipeHolder<?> recipeholder = fromJson(resourcelocation, GsonHelper.convertToJsonObject(entry.getValue(), "top element"));
+-            map.computeIfAbsent(recipeholder.value().getType(), (p_44075_) -> {
+-               return ImmutableMap.builder();
+-            }).put(resourcelocation, recipeholder);
 +            if (recipeholder == null) {
 +               LOGGER.info("Skipping loading recipe {} as it's serializer returned null", resourcelocation);
 +               continue;
 +            }
--            map.computeIfAbsent(recipeholder.value().getType(), (p_44075_) -> {
--               return ImmutableMap.builder();
--            }).put(resourcelocation, recipeholder);
 +            // CraftBukkit start
 +            (map.computeIfAbsent(recipeholder.value().getType(), (recipes) -> {
 +               return new it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<>();

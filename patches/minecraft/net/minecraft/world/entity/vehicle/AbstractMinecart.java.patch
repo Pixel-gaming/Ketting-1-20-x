@@ -89,7 +89,7 @@
                 this.ejectPassengers();
                 if (flag && !this.hasCustomName()) {
                    this.discard();
-@@ -261,6 +_,14 @@
+@@ -260,6 +_,14 @@
     }
  
     public void tick() {
@@ -190,7 +190,7 @@
                    entity.push(this);
                 }
              }
-@@ -353,23 +_,34 @@
+@@ -352,23 +_,34 @@
     }
  
     protected double getMaxSpeed() {
@@ -348,8 +348,7 @@
                          p_38165_.setDeltaMovement(vec33.multiply(0.2D, 1.0D, 0.2D));
                          p_38165_.push(vec32.x + d0, 0.0D, vec32.z + d1);
                          this.setDeltaMovement(vec32.multiply(0.95D, 1.0D, 0.95D));
-@@ -818,7 +_,43 @@
-    public void setCustomDisplay(boolean p_38139_) {
+@@ -819,6 +_,42 @@
        this.getEntityData().set(DATA_ID_CUSTOM_DISPLAY, p_38139_);
     }
  

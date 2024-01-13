@@ -100,7 +100,7 @@
                 return false;
              } else if (p_31579_.is(DamageTypeTags.IGNITES_ARMOR_STANDS)) {
                 if (this.isOnFire()) {
-@@ -425,7 +_,7 @@
+@@ -418,7 +_,7 @@
                       } else {
                          this.brokenByPlayer(p_31579_);
                          this.showBreakingParticles();
@@ -109,7 +109,7 @@
                       }
  
                       return true;
-@@ -488,18 +_,18 @@
+@@ -481,18 +_,18 @@
           itemstack.setHoverName(this.getCustomName());
        }
  
@@ -131,7 +131,7 @@
              this.handItems.set(i, ItemStack.EMPTY);
           }
        }
-@@ -507,11 +_,11 @@
+@@ -500,11 +_,11 @@
        for(int j = 0; j < this.armorItems.size(); ++j) {
           ItemStack itemstack1 = this.armorItems.get(j);
           if (!itemstack1.isEmpty()) {
@@ -145,7 +145,7 @@
     }
  
     private void playBrokenSound() {
-@@ -591,7 +_,15 @@
+@@ -584,7 +_,15 @@
        return this.isSmall();
     }
  

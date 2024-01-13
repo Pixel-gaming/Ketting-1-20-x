@@ -804,7 +804,7 @@
  
     public void broadcastSystemMessage(Component p_240618_, boolean p_240644_) {
        this.broadcastSystemMessage(p_240618_, (p_215639_) -> {
-@@ -767,34 +_,50 @@
+@@ -767,36 +_,52 @@
        return p_251384_.hasSignature() && !p_251384_.hasExpiredServer(Instant.now());
     }
  
@@ -864,6 +864,8 @@
 +      // Forge: don't overwrite active player with a fake one.
 +      if (!(p_11297_ instanceof net.minecraftforge.common.util.FakePlayer))
        playeradvancements.setPlayer(p_11297_);
+       return playeradvancements;
+    }
 @@ -826,7 +_,7 @@
     }
  

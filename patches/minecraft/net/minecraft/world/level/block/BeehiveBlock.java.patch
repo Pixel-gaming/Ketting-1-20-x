@@ -10,14 +10,13 @@
  
     public void playerDestroy(Level p_49584_, Player p_49585_, BlockPos p_49586_, BlockState p_49587_, @Nullable BlockEntity p_49588_, ItemStack p_49589_) {
        super.playerDestroy(p_49584_, p_49585_, p_49586_, p_49587_, p_49588_, p_49589_);
-@@ -89,5 +_,6 @@
+@@ -89,11 +_,12 @@
        List<Bee> list = p_49650_.getEntitiesOfClass(Bee.class, (new AABB(p_49651_)).inflate(8.0D, 6.0D, 8.0D));
        if (!list.isEmpty()) {
           List<Player> list1 = p_49650_.getEntitiesOfClass(Player.class, (new AABB(p_49651_)).inflate(8.0D, 6.0D, 8.0D));
 +         if (list1.isEmpty()) return; //Forge: Prevent Error when no players are around.
           int i = list1.size();
  
-@@ -94,6 +_,6 @@
           for(Bee bee : list) {
              if (bee.getTarget() == null) {
 -               bee.setTarget(list1.get(p_49650_.random.nextInt(i)));
