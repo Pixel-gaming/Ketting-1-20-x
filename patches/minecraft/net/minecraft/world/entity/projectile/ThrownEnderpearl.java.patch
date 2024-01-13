@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
 +++ b/net/minecraft/world/entity/projectile/ThrownEnderpearl.java
-@@ -45,22 +_,39 @@
+@@ -46,22 +_,39 @@
           if (entity instanceof ServerPlayer) {
              ServerPlayer serverplayer = (ServerPlayer)entity;
              if (serverplayer.f_8906_.m_6198_() && serverplayer.m_9236_() == this.m_9236_() && !serverplayer.m_5803_()) {
@@ -55,7 +55,7 @@
              }
           } else if (entity != null) {
              entity.m_6021_(this.m_20185_(), this.m_20186_(), this.m_20189_());
-@@ -83,12 +_,12 @@
+@@ -84,12 +_,12 @@
     }
  
     @Nullable
