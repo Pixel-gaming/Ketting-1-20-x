@@ -12,7 +12,7 @@
  
     public ClientboundCustomPayloadPacket(FriendlyByteBuf p_300967_) {
        this(m_293347_(p_300967_.m_130281_(), p_300967_));
-@@ -36,14 +_,15 @@
+@@ -36,14 +_,16 @@
  
     private static CustomPacketPayload m_293347_(ResourceLocation p_298700_, FriendlyByteBuf p_298589_) {
        FriendlyByteBuf.Reader<? extends CustomPacketPayload> reader = f_290559_.get(p_298700_);
@@ -26,6 +26,7 @@
        if (i >= 0 && i <= 1048576) {
 -         p_297545_.skipBytes(i);
 -         return new DiscardedPayload(p_299265_);
++         //return new DiscardedPayload(p_299265_, p_297545_); //Forge
 +         // CraftBukkit start
 +         return new UnknownPayload(p_299265_, p_297545_.readBytes(i));
 +         // CraftBukkit end

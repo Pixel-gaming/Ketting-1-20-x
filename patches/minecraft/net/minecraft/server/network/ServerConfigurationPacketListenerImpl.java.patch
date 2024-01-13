@@ -1,16 +1,7 @@
 --- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-@@ -36,16 +_,23 @@
- public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketListenerImpl implements TickablePacketListener, ServerConfigurationPacketListener {
-    private static final Logger f_291519_ = LogUtils.getLogger();
-    private static final Component f_291657_ = Component.m_237115_("multiplayer.disconnect.invalid_player_data");
-+   private static final ConfigurationTask.Type VANILLA_START = new ConfigurationTask.Type("vanilla_start");
-    private final GameProfile f_291596_;
-    private final Queue<ConfigurationTask> f_290691_ = new ConcurrentLinkedQueue<>();
-    @Nullable
-    private ConfigurationTask f_291862_;
+@@ -43,7 +_,11 @@
     private ClientInformation f_290851_;
-+   private final net.minecraftforge.network.config.ConfigurationTaskContext taskContext;
  
     public ServerConfigurationPacketListenerImpl(MinecraftServer p_301415_, Connection p_298106_, CommonListenerCookie p_301309_) {
 -      super(p_301415_, p_298106_, p_301309_);
@@ -21,11 +12,8 @@
 +      super(p_301415_, p_298106_, p_301309_, player); // CraftBukkit
        this.f_291596_ = p_301309_.f_290628_();
        this.f_290851_ = p_301309_.f_290565_();
-+      this.taskContext = new net.minecraftforge.network.config.ConfigurationTaskContext(p_298106_, this::m_141995_, this::m_293514_);
     }
- 
-    protected GameProfile m_293343_() {
-@@ -61,12 +_,17 @@
+@@ -61,12 +_,15 @@
        return this.f_291338_.m_129536_();
     }
  
@@ -39,8 +27,6 @@
 +   }
 +
 +   public void m_294295_() {
-+      net.minecraftforge.event.ForgeEventFactory.gatherLoginConfigTasks(this.f_291338_, this.f_290691_::add);
-+      this.f_290691_.add(new net.minecraftforge.network.config.SimpleConfigurationTask(VANILLA_START, this::vanillaStart));
        this.m_295612_();
        this.f_290691_.add(new JoinWorldTask());
        this.m_295676_();
@@ -61,12 +47,3 @@
           playerlist.m_11261_(this.f_291338_, serverplayer, this.m_295477_(this.f_290851_));
           this.f_291338_.m_294304_();
        } catch (Exception exception) {
-@@ -135,7 +_,7 @@
-          ConfigurationTask configurationtask = this.f_290691_.poll();
-          if (configurationtask != null) {
-             this.f_291862_ = configurationtask;
--            configurationtask.m_293075_(this::m_141995_);
-+            configurationtask.start(this.taskContext);
-          }
- 
-       }

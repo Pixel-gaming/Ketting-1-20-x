@@ -946,7 +946,8 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
         }
     }
 
-    public static class Snapshot {
+    public static class Snapshot
+    {
         private static final Comparator<ResourceLocation> sorter = (a,b) -> a.compareNamespaced(b);
         public final Map<ResourceLocation, Integer> ids = Maps.newTreeMap(sorter);
         public final Map<ResourceLocation, ResourceLocation> aliases = Maps.newTreeMap(sorter);
@@ -954,11 +955,13 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
         public final Map<ResourceLocation, String> overrides = Maps.newTreeMap(sorter);
         private FriendlyByteBuf binary = null;
 
-        public CompoundTag write() {
+        public CompoundTag write()
+        {
             CompoundTag data = new CompoundTag();
 
             ListTag ids = new ListTag();
-            this.ids.entrySet().stream().forEach(e -> {
+            this.ids.entrySet().stream().forEach(e ->
+            {
                 CompoundTag tag = new CompoundTag();
                 tag.putString("K", e.getKey().toString());
                 tag.putInt("V", e.getValue());
@@ -967,7 +970,8 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
             data.put("ids", ids);
 
             ListTag aliases = new ListTag();
-            this.aliases.entrySet().stream().forEach(e -> {
+            this.aliases.entrySet().stream().forEach(e ->
+            {
                 CompoundTag tag = new CompoundTag();
                 tag.putString("K", e.getKey().toString());
                 tag.putString("V", e.getValue().toString());
@@ -976,7 +980,8 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
             data.put("aliases", aliases);
 
             ListTag overrides = new ListTag();
-            this.overrides.entrySet().stream().forEach(e -> {
+            this.overrides.entrySet().stream().forEach(e ->
+            {
                 CompoundTag tag = new CompoundTag();
                 tag.putString("K", e.getKey().toString());
                 tag.putString("V", e.getValue());
@@ -990,58 +995,99 @@ public class ForgeRegistry<V> implements IForgeRegistryInternal<V>, IForgeRegist
             return data;
         }
 
-        public static Snapshot read(CompoundTag nbt) {
+        public static Snapshot read(CompoundTag nbt)
+        {
             Snapshot ret = new Snapshot();
             if (nbt == null)
+            {
                 return ret;
+            }
 
             ListTag list = nbt.getList("ids", 10);
-            list.forEach(e -> {
+            list.forEach(e ->
+            {
                 CompoundTag comp = (CompoundTag)e;
                 ret.ids.put(new ResourceLocation(comp.getString("K")), comp.getInt("V"));
             });
 
             list = nbt.getList("aliases", 10);
-            list.forEach(e -> {
+            list.forEach(e ->
+            {
                 CompoundTag comp = (CompoundTag)e;
                 ret.aliases.put(new ResourceLocation(comp.getString("K")), new ResourceLocation(comp.getString("V")));
             });
 
             list = nbt.getList("overrides", 10);
-            list.forEach(e -> {
+            list.forEach(e ->
+            {
                 CompoundTag comp = (CompoundTag)e;
                 ret.overrides.put(new ResourceLocation(comp.getString("K")), comp.getString("V"));
             });
 
             int[] blocked = nbt.getIntArray("blocked");
             for (int i : blocked)
+            {
                 ret.blocked.add(i);
+            }
 
             return ret;
         }
 
-        public synchronized FriendlyByteBuf getPacketData() {
+        public synchronized FriendlyByteBuf getPacketData()
+        {
             if (binary == null) {
                 FriendlyByteBuf pkt = new FriendlyByteBuf(Unpooled.buffer());
-                pkt.writeMap(this.ids, FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::writeVarInt);
-                pkt.writeMap(this.aliases, FriendlyByteBuf::writeResourceLocation, FriendlyByteBuf::writeResourceLocation);
-                pkt.writeMap(this.overrides, FriendlyByteBuf::writeResourceLocation, (b,v) -> b.writeUtf(v, 0x100));
-                pkt.writeCollection(this.blocked, FriendlyByteBuf::writeVarInt);
+
+                pkt.writeVarInt(this.ids.size());
+                this.ids.forEach((k,v) -> {
+                    pkt.writeResourceLocation(k);
+                    pkt.writeVarInt(v);
+                });
+
+                pkt.writeVarInt(this.aliases.size());
+                this.aliases.forEach((k, v) -> {
+                    pkt.writeResourceLocation(k);
+                    pkt.writeResourceLocation(v);
+                });
+
+                pkt.writeVarInt(this.overrides.size());
+                this.overrides.forEach((k, v) -> {
+                    pkt.writeResourceLocation(k);
+                    pkt.writeUtf(v, 0x100);
+                });
+
+                pkt.writeVarInt(this.blocked.size());
+                this.blocked.forEach(pkt::writeVarInt);
+
                 this.binary = pkt;
             }
 
             return new FriendlyByteBuf(binary.slice());
         }
 
-        public static Snapshot read(FriendlyByteBuf buf) {
-            if (buf == null)
+        public static Snapshot read(FriendlyByteBuf buff)
+        {
+            if (buff == null)
                 return new Snapshot();
 
-            var ret = new Snapshot();
-            ret.ids.putAll(buf.readMap(FriendlyByteBuf::readResourceLocation, FriendlyByteBuf::readVarInt));
-            ret.aliases.putAll(buf.readMap(FriendlyByteBuf::readResourceLocation, FriendlyByteBuf::readResourceLocation));
-            ret.overrides.putAll(buf.readMap(FriendlyByteBuf::readResourceLocation, b -> b.readUtf(0x100)));
-            ret.blocked.addAll(buf.readList(FriendlyByteBuf::readVarInt));
+            Snapshot ret = new Snapshot();
+
+            int len = buff.readVarInt();
+            for (int x = 0; x < len; x++)
+                ret.ids.put(buff.readResourceLocation(), buff.readVarInt());
+
+            len = buff.readVarInt();
+            for (int x = 0; x < len; x++)
+                ret.aliases.put(buff.readResourceLocation(), buff.readResourceLocation());
+
+            len = buff.readVarInt();
+            for (int x = 0; x < len; x++)
+                ret.overrides.put(buff.readResourceLocation(), buff.readUtf(0x100));
+
+            len = buff.readVarInt();
+            for (int x = 0; x < len; x++)
+                ret.blocked.add(buff.readVarInt());
+
             return ret;
         }
     }

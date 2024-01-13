@@ -23,34 +23,42 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundCommandsPacket;
 import net.minecraft.network.protocol.game.ClientboundUpdateAttributesPacket;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.ConnectionType;
-import net.minecraftforge.network.NetworkContext;
+import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import net.minecraftforge.registries.RegistryManager;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+
 import com.google.common.collect.ImmutableMap;
 import com.mojang.brigadier.tree.RootCommandNode;
+import com.mojang.logging.LogUtils;
 
 /**
  * A filter for impl packets, used to filter/modify parts of vanilla impl messages that
  * will cause errors or warnings on vanilla clients, for example entity attributes that are added by Forge or mods.
  */
 @ChannelHandler.Sharable
-public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
-    public VanillaConnectionNetworkFilter() {
+public class VanillaConnectionNetworkFilter extends VanillaPacketFilter
+{
+    private static final Logger LOGGER = LogUtils.getLogger();
+
+    public VanillaConnectionNetworkFilter()
+    {
         super(
-            ImmutableMap.<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>>builder()
-            .put(handler(ClientboundUpdateAttributesPacket.class, VanillaConnectionNetworkFilter::filterEntityProperties))
-            .put(handler(ClientboundCommandsPacket.class, VanillaConnectionNetworkFilter::filterCommandList))
-            // TODO Filter tags
-            //.put(handler(ClientboundUpdateTagsPacket.class, VanillaConnectionNetworkFilter::filterCustomTagTypes))
-            .build()
+                ImmutableMap.<Class<? extends Packet<?>>, BiConsumer<Packet<?>, List<? super Packet<?>>>>builder()
+                .put(handler(ClientboundUpdateAttributesPacket.class, VanillaConnectionNetworkFilter::filterEntityProperties))
+                .put(handler(ClientboundCommandsPacket.class, VanillaConnectionNetworkFilter::filterCommandList))
+                // TODO Filter tags
+                //.put(handler(ClientboundUpdateTagsPacket.class, VanillaConnectionNetworkFilter::filterCustomTagTypes))
+                .build()
         );
     }
 
     @Override
-    protected boolean isNecessary(Connection connection) {
-        return NetworkContext.get(connection).getType() == ConnectionType.VANILLA;
+    protected boolean isNecessary(Connection manager)
+    {
+        return NetworkHooks.isVanillaConnection(manager);
     }
 
     /**
@@ -58,7 +66,8 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
      * A vanilla client would ignore these with an error log.
      */
     @NotNull
-    private static ClientboundUpdateAttributesPacket filterEntityProperties(ClientboundUpdateAttributesPacket msg) {
+    private static ClientboundUpdateAttributesPacket filterEntityProperties(ClientboundUpdateAttributesPacket msg)
+    {
         ClientboundUpdateAttributesPacket newPacket = new ClientboundUpdateAttributesPacket(msg.getEntityId(), Collections.emptyList());
         msg.getValues().stream()
                 .filter(snapshot -> {
@@ -74,7 +83,8 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
      * A vanilla client would fail to deserialize the packet and disconnect with an error message if these were sent.
      */
     @NotNull
-    private static ClientboundCommandsPacket filterCommandList(ClientboundCommandsPacket packet) {
+    private static ClientboundCommandsPacket filterCommandList(ClientboundCommandsPacket packet)
+    {
         CommandBuildContext commandBuildContext = Commands.createValidationContext(VanillaRegistries.createLookup());
         RootCommandNode<SharedSuggestionProvider> root = packet.getRoot(commandBuildContext);
         RootCommandNode<SharedSuggestionProvider> newRoot = CommandTreeCleaner.cleanArgumentTypes(root, argType -> {
@@ -99,11 +109,12 @@ public class VanillaConnectionNetworkFilter extends VanillaPacketFilter {
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         return new ClientboundUpdateTagsPacket(tags);
     }
+    */
 
-    private static boolean isVanillaRegistry(ResourceLocation location) {
+    private static boolean isVanillaRegistry(ResourceLocation location)
+    {
         // Checks if the registry name is contained within the static view of both BuiltInRegistries and VanillaRegistries
         return RegistryManager.getVanillaRegistryKeys().contains(location)
                 || VanillaRegistries.DATAPACK_REGISTRY_KEYS.stream().anyMatch(k -> k.location().equals(location));
     }
-    */
 }
