@@ -64,7 +64,7 @@
        }
  
     }
-@@ -275,11 +_,15 @@
+@@ -274,11 +_,15 @@
              livingentity = (LivingEntity)p_34288_.m_7639_();
           }
  
@@ -82,7 +82,7 @@
  
              for(int l = 0; l < 50; ++l) {
                 int i1 = i + Mth.m_216271_(this.f_19796_, 7, 40) * Mth.m_216271_(this.f_19796_, -1, 1);
-@@ -291,9 +_,10 @@
+@@ -290,9 +_,10 @@
                 if (NaturalSpawner.m_47051_(spawnplacements$type, this.m_9236_(), blockpos, entitytype) && SpawnPlacements.m_217074_(entitytype, serverlevel, MobSpawnType.REINFORCEMENT, blockpos, this.m_9236_().f_46441_)) {
                    zombie.m_6034_((double)i1, (double)j1, (double)k1);
                    if (!this.m_9236_().m_45914_((double)i1, (double)j1, (double)k1, 7.0D) && this.m_9236_().m_45784_(zombie) && this.m_9236_().m_45786_(zombie) && !this.m_9236_().m_46855_(zombie.m_20191_())) {
@@ -173,7 +173,7 @@
                    }
                 }
              }
-@@ -465,7 +_,7 @@
+@@ -464,7 +_,7 @@
     }
  
     public static boolean m_219162_(RandomSource p_219163_) {
@@ -182,7 +182,7 @@
     }
  
     protected void m_34339_(float p_34340_) {
-@@ -485,7 +_,7 @@
+@@ -484,7 +_,7 @@
     }
  
     protected void m_7572_() {
@@ -190,4 +190,4 @@
 +      this.m_21051_(Attributes.f_22287_).m_22100_(this.f_19796_.m_188500_() * net.minecraftforge.common.ForgeConfig.SERVER.zombieBaseSummonChance.get());
     }
  
-    protected Vector3f m_292594_(Entity p_300549_, EntityDimensions p_298020_, float p_298000_) {
+    public double m_6049_() {

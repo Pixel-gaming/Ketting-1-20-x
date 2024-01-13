@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/SmithingTransformRecipe.java
 +++ b/net/minecraft/world/item/crafting/SmithingTransformRecipe.java
-@@ -58,8 +_,19 @@
+@@ -65,8 +_,19 @@
     }
  
     public boolean m_142505_() {

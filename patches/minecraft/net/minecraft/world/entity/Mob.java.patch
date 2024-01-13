@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -117,6 +_,11 @@
+@@ -115,6 +_,11 @@
     private CompoundTag f_21359_;
     private BlockPos f_21360_ = BlockPos.f_121853_;
     private float f_21341_ = -1.0F;
@@ -115,7 +115,7 @@
        if (p_21450_.m_128425_("ArmorItems", 9)) {
           ListTag listtag = p_21450_.m_128437_("ArmorItems", 10);
  
-@@ -481,6 +_,20 @@
+@@ -479,6 +_,20 @@
        }
  
        this.m_21557_(p_21450_.m_128471_("NoAI"));
@@ -136,7 +136,7 @@
     }
  
     protected void m_7625_(DamageSource p_21389_, boolean p_21390_) {
-@@ -520,9 +_,9 @@
+@@ -518,9 +_,9 @@
     public void m_8107_() {
        super.m_8107_();
        this.m_9236_().m_46473_().m_6180_("looting");
@@ -229,7 +229,7 @@
     @Nullable
     public SpawnGroupData m_6518_(ServerLevelAccessor p_21434_, DifficultyInstance p_21435_, MobSpawnType p_21436_, @Nullable SpawnGroupData p_21437_, @Nullable CompoundTag p_21438_) {
        RandomSource randomsource = p_21434_.m_213780_();
-@@ -1041,6 +_,7 @@
+@@ -1035,6 +_,7 @@
           this.m_21559_(false);
        }
  

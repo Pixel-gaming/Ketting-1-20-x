@@ -94,7 +94,7 @@
     }
  
     public void m_7822_(byte p_35391_) {
-@@ -723,7 +_,7 @@
+@@ -722,7 +_,7 @@
     }
  
     public void m_8038_(ServerLevel p_35409_, LightningBolt p_35410_) {
@@ -103,7 +103,7 @@
           f_201976_.info("Villager {} was struck by lightning {}.", this, p_35410_);
           Witch witch = EntityType.f_20495_.m_20615_(p_35409_);
           if (witch != null) {
-@@ -736,7 +_,13 @@
+@@ -735,7 +_,13 @@
              }
  
              witch.m_21530_();

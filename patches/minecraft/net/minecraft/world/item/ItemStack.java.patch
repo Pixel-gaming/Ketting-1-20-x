@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -76,12 +_,16 @@
+@@ -75,12 +_,16 @@
  import net.minecraft.world.level.block.state.pattern.BlockInWorld;
  import org.slf4j.Logger;
  
@@ -130,7 +130,7 @@
     }
  
     public static ItemStack m_41712_(CompoundTag p_41713_) {
-@@ -174,7 +_,7 @@
+@@ -173,7 +_,7 @@
     }
  
     public boolean m_41619_() {
@@ -139,7 +139,7 @@
     }
  
     public boolean m_246617_(FeatureFlagSet p_250869_) {
-@@ -199,7 +_,7 @@
+@@ -198,7 +_,7 @@
     }
  
     public Item m_41720_() {
@@ -148,7 +148,7 @@
     }
  
     public Holder<Item> m_220173_() {
-@@ -231,6 +_,15 @@
+@@ -226,6 +_,15 @@
     }
  
     public InteractionResult m_41661_(UseOnContext p_41662_) {
@@ -164,7 +164,7 @@
        Player player = p_41662_.m_43723_();
        BlockPos blockpos = p_41662_.m_8083_();
        BlockInWorld blockinworld = new BlockInWorld(p_41662_.m_43725_(), blockpos, false);
-@@ -238,10 +_,189 @@
+@@ -233,10 +_,189 @@
           return InteractionResult.PASS;
        } else {
           Item item = this.m_41720_();
@@ -356,7 +356,7 @@
  
           return interactionresult;
        }
-@@ -267,11 +_,15 @@
+@@ -262,11 +_,15 @@
           p_41740_.m_128365_("tag", this.f_41590_.m_6426_());
        }
  
@@ -373,7 +373,7 @@
     }
  
     public boolean m_41753_() {
-@@ -279,7 +_,7 @@
+@@ -274,7 +_,7 @@
     }
  
     public boolean m_41763_() {
@@ -382,7 +382,7 @@
           CompoundTag compoundtag = this.m_41783_();
           return compoundtag == null || !compoundtag.m_128471_("Unbreakable");
        } else {
-@@ -288,19 +_,19 @@
+@@ -283,19 +_,19 @@
     }
  
     public boolean m_41768_() {
@@ -428,7 +428,7 @@
              if (p_220158_ <= 0) {
                 return false;
              }
-@@ -336,9 +_,16 @@
+@@ -331,9 +_,16 @@
     public <T extends LivingEntity> void m_41622_(int p_41623_, T p_41624_, Consumer<T> p_41625_) {
        if (!p_41624_.m_9236_().f_46443_ && (!(p_41624_ instanceof Player) || !((Player)p_41624_).m_150110_().f_35937_)) {
           if (this.m_41763_()) {
@@ -445,7 +445,7 @@
                 this.m_41774_(1);
                 if (p_41624_ instanceof Player) {
                    ((Player)p_41624_).m_36246_(Stats.f_12983_.m_12902_(item));
-@@ -388,7 +_,7 @@
+@@ -383,7 +_,7 @@
     }
  
     public boolean m_41735_(BlockState p_41736_) {
@@ -454,7 +454,7 @@
     }
  
     public InteractionResult m_41647_(Player p_41648_, LivingEntity p_41649_, InteractionHand p_41650_) {
-@@ -399,7 +_,7 @@
+@@ -394,7 +_,7 @@
        if (this.m_41619_()) {
           return f_41583_;
        } else {
@@ -463,7 +463,7 @@
           itemstack.m_41754_(this.m_41612_());
           if (this.f_41590_ != null) {
              itemstack.f_41590_ = this.f_41590_.m_6426_();
-@@ -435,7 +_,7 @@
+@@ -430,7 +_,7 @@
        if (!p_150943_.m_150930_(p_150944_.m_41720_())) {
           return false;
        } else {
@@ -490,7 +490,7 @@
     public CompoundTag m_41784_() {
        if (this.f_41590_ == null) {
           this.m_41751_(new CompoundTag());
-@@ -527,7 +_,7 @@
+@@ -522,7 +_,7 @@
  
     public void m_41751_(@Nullable CompoundTag p_41752_) {
        this.f_41590_ = p_41752_;
@@ -499,7 +499,7 @@
           this.m_41721_(this.m_41773_());
        }
  
-@@ -588,7 +_,7 @@
+@@ -583,7 +_,7 @@
  
     public List<Component> m_41651_(@Nullable Player p_41652_, TooltipFlag p_41653_) {
        List<Component> list = Lists.newArrayList();
@@ -508,7 +508,7 @@
        if (this.m_41788_()) {
           mutablecomponent.m_130940_(ChatFormatting.ITALIC);
        }
-@@ -735,6 +_,7 @@
+@@ -730,6 +_,7 @@
           list.add(f_243862_);
        }
  
@@ -516,7 +516,7 @@
        return list;
     }
  
-@@ -743,7 +_,7 @@
+@@ -738,7 +_,7 @@
     }
  
     private int m_41618_() {
@@ -525,7 +525,7 @@
     }
  
     public void m_41654_(ItemStack.TooltipPart p_41655_) {
-@@ -863,9 +_,10 @@
+@@ -853,9 +_,10 @@
              }
           }
        } else {
@@ -552,7 +552,7 @@
     public Component m_41611_() {
        MutableComponent mutablecomponent = Component.m_237119_().m_7220_(this.m_41786_());
        if (this.m_41788_()) {
-@@ -893,7 +_,7 @@
+@@ -883,7 +_,7 @@
  
        MutableComponent mutablecomponent1 = ComponentUtils.m_130748_(mutablecomponent);
        if (!this.m_41619_()) {
@@ -561,7 +561,7 @@
              return p_220170_.m_131144_(new HoverEvent(HoverEvent.Action.f_130832_, new HoverEvent.ItemStackInfo(this)));
           });
        }
-@@ -945,12 +_,31 @@
+@@ -935,12 +_,31 @@
        this.m_41720_().m_5929_(p_41732_, p_41733_, this, p_41734_);
     }
  

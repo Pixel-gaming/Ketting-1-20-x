@@ -27,7 +27,7 @@
        return m_38889_(this.f_39033_, p_39047_, Blocks.f_50273_);
     }
  
-@@ -93,10 +_,8 @@
+@@ -91,10 +_,8 @@
              }
  
              slot.m_40234_(itemstack1, itemstack);

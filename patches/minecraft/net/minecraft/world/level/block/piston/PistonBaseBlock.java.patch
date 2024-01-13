@@ -94,7 +94,7 @@
           for(int j = list2.size() - 1; j >= 0; --j) {
              BlockPos blockpos2 = list2.get(j);
              BlockState blockstate1 = p_60182_.m_8055_(blockpos2);
-@@ -353,6 +_,10 @@
+@@ -354,6 +_,10 @@
  
     public BlockState m_6843_(BlockState p_60215_, Rotation p_60216_) {
        return p_60215_.m_61124_(f_52588_, p_60216_.m_55954_(p_60215_.m_61143_(f_52588_)));

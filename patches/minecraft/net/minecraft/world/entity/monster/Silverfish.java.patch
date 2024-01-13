@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Silverfish.java
 +++ b/net/minecraft/world/entity/monster/Silverfish.java
-@@ -141,7 +_,7 @@
+@@ -140,7 +_,7 @@
              return false;
           } else {
              RandomSource randomsource = this.f_25725_.m_217043_();

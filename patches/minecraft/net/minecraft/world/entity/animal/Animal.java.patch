@@ -43,7 +43,7 @@
  
        this.m_9236_().m_7605_(this, (byte)18);
     }
-@@ -202,15 +_,43 @@
+@@ -206,15 +_,43 @@
  
     public void m_27563_(ServerLevel p_27564_, Animal p_27565_) {
        AgeableMob ageablemob = this.m_142606_(p_27564_, p_27565_);

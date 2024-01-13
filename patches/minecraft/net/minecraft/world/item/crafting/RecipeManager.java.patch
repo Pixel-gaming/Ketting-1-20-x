@@ -1,12 +1,9 @@
 --- a/net/minecraft/world/item/crafting/RecipeManager.java
 +++ b/net/minecraft/world/item/crafting/RecipeManager.java
-@@ -37,27 +_,51 @@
- public class RecipeManager extends SimpleJsonResourceReloadListener {
-    private static final Gson f_44005_ = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-    private static final Logger f_44006_ = LogUtils.getLogger();
--   private Map<RecipeType<?>, Map<ResourceLocation, RecipeHolder<?>>> f_44007_ = ImmutableMap.of();
-+   public Map<RecipeType<?>, it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<ResourceLocation, RecipeHolder<?>>> f_44007_ = ImmutableMap.of(); // CraftBukkit
-    private Map<ResourceLocation, RecipeHolder<?>> f_199900_ = ImmutableMap.of();
+@@ -37,24 +_,48 @@
+-   private Map<RecipeType<?>, Map<ResourceLocation, Recipe<?>>> f_44007_ = ImmutableMap.of();
++   public Map<RecipeType<?>, it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap<ResourceLocation, Recipe<?>>> f_44007_ = ImmutableMap.of(); // CraftBukkit
+    private Map<ResourceLocation, Recipe<?>> f_199900_ = ImmutableMap.of();
     private boolean f_44008_;
 +   private final net.minecraftforge.common.crafting.conditions.ICondition.IContext context; //Forge: add context
  
@@ -37,15 +34,16 @@
 +         if (resourcelocation.m_135815_().startsWith("_")) continue; //Forge: filter anything beginning with "_" as it's used for metadata.
  
           try {
+-            Recipe<?> recipe = m_44045_(resourcelocation, GsonHelper.m_13918_(entry.getValue(), "top element"));
 +            if (entry.getValue().isJsonObject() && !net.minecraftforge.common.crafting.CraftingHelper.processConditions(entry.getValue().getAsJsonObject(), "conditions", this.context)) {
 +               f_44006_.debug("Skipping loading recipe {} as it's conditions were not met", resourcelocation);
 +               continue;
 +            }
-             RecipeHolder<?> recipeholder = m_44045_(resourcelocation, GsonHelper.m_13918_(entry.getValue(), "top element"));
++            Recipe<?> recipe = fromJson(resourcelocation, GsonHelper.m_13918_(entry.getValue(), "top element"), this.context);
 -            map.computeIfAbsent(recipeholder.f_291008_().m_6671_(), (p_44075_) -> {
 -               return ImmutableMap.builder();
 -            }).put(resourcelocation, recipeholder);
-+            if (recipeholder == null) {
++            if (recipe == null) {
 +               f_44006_.info("Skipping loading recipe {} as it's serializer returned null", resourcelocation);
 +               continue;
 +            }
@@ -108,6 +106,25 @@
     }
  
     public <C extends Container, T extends Recipe<C>> NonNullList<ItemStack> m_44069_(RecipeType<T> p_44070_, C p_44071_, Level p_44072_) {
+@@ -141,11 +_,17 @@
+       });
+    }
+ 
++   /** @deprecated Forge: use {@linkplain #fromJson(ResourceLocation, JsonObject, net.minecraftforge.common.crafting.conditions.ICondition.IContext) overload with context}. */
++   @Deprecated
+    public static Recipe<?> m_44045_(ResourceLocation p_44046_, JsonObject p_44047_) {
++      return fromJson(p_44046_, p_44047_, net.minecraftforge.common.crafting.conditions.ICondition.IContext.EMPTY);
++   }
++
++   public static Recipe<?> fromJson(ResourceLocation p_44046_, JsonObject p_44047_, net.minecraftforge.common.crafting.conditions.ICondition.IContext context) {
+       String s = GsonHelper.m_13906_(p_44047_, "type");
+       return BuiltInRegistries.f_256769_.m_6612_(new ResourceLocation(s)).orElseThrow(() -> {
+          return new JsonSyntaxException("Invalid or unsupported recipe type '" + s + "'");
+-      }).m_6729_(p_44046_, p_44047_);
++      }).fromJson(p_44046_, p_44047_, context);
+    }
+ 
+    public void m_44024_(Iterable<Recipe<?>> p_44025_) {
 @@ -155,11 +_,11 @@
  
     public void m_44024_(Iterable<RecipeHolder<?>> p_44025_) {

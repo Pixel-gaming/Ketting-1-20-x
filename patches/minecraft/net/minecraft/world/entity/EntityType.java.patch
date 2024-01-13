@@ -9,7 +9,7 @@
     public static final EntityType<ArmorStand> f_20529_ = m_20634_("armor_stand", EntityType.Builder.<ArmorStand>m_20704_(ArmorStand::new, MobCategory.MISC).m_20699_(0.5F, 1.975F).m_20702_(10));
     public static final EntityType<Arrow> f_20548_ = m_20634_("arrow", EntityType.Builder.<Arrow>m_20704_(Arrow::new, MobCategory.MISC).m_20699_(0.5F, 0.5F).m_20702_(4).m_20717_(20));
     public static final EntityType<Axolotl> f_147039_ = m_20634_("axolotl", EntityType.Builder.m_20704_(Axolotl::new, MobCategory.AXOLOTLS).m_20699_(0.75F, 0.42F).m_20702_(10));
-@@ -308,6 +_,11 @@
+@@ -307,6 +_,11 @@
     private final EntityDimensions f_20547_;
     private final FeatureFlagSet f_244139_;
  
@@ -21,7 +21,7 @@
     private static <T extends Entity> EntityType<T> m_20634_(String p_20635_, EntityType.Builder<T> p_20636_) {
        return Registry.m_122961_(BuiltInRegistries.f_256780_, p_20635_, p_20636_.m_20712_(p_20635_));
     }
-@@ -321,21 +_,34 @@
+@@ -320,21 +_,34 @@
     }
  
     public EntityType(EntityType.EntityFactory<T> p_273268_, MobCategory p_272918_, boolean p_273417_, boolean p_273389_, boolean p_273556_, boolean p_272654_, ImmutableSet<Block> p_273631_, EntityDimensions p_272946_, int p_272895_, int p_273451_, FeatureFlagSet p_273518_) {
@@ -117,7 +117,7 @@
        }
  
        return t;
-@@ -601,14 +_,23 @@
+@@ -600,14 +_,23 @@
     }
  
     public int m_20681_() {
@@ -141,7 +141,7 @@
        return this != f_20532_ && this != f_20467_ && this != f_20496_ && this != f_20549_ && this != f_20462_ && this != f_147033_ && this != f_20464_ && this != f_20506_ && this != f_20564_ && this != f_20569_;
     }
  
-@@ -635,6 +_,12 @@
+@@ -630,6 +_,12 @@
        return this.f_204038_;
     }
  
@@ -154,7 +154,7 @@
     public static class Builder<T extends Entity> {
        private final EntityType.EntityFactory<T> f_20685_;
        private final MobCategory f_20686_;
-@@ -648,6 +_,11 @@
+@@ -643,6 +_,11 @@
        private EntityDimensions f_20694_ = EntityDimensions.m_20395_(0.6F, 1.8F);
        private FeatureFlagSet f_244453_ = FeatureFlags.f_244377_;
  
@@ -166,7 +166,7 @@
        private Builder(EntityType.EntityFactory<T> p_20696_, MobCategory p_20697_) {
           this.f_20685_ = p_20696_;
           this.f_20686_ = p_20697_;
-@@ -709,12 +_,36 @@
+@@ -704,12 +_,36 @@
           return this;
        }
  

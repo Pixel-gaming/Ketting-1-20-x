@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/SpongeBlock.java
 +++ b/net/minecraft/world/level/block/SpongeBlock.java
-@@ -41,43 +_,83 @@
+@@ -38,43 +_,83 @@
     }
  
     private boolean m_56807_(Level p_56808_, BlockPos p_56809_) {
@@ -17,14 +17,14 @@
           if (p_296944_.equals(p_56809_)) {
              return true;
           } else {
--            BlockState blockstate = p_56808_.m_8055_(p_296944_);
--            FluidState fluidstate = p_56808_.m_6425_(p_296944_);
+-            BlockState blockstate = p_56808_.m_8055_(p_279054_);
+-            FluidState fluidstate = p_56808_.m_6425_(p_279054_);
 -            if (!fluidstate.m_205070_(FluidTags.f_13131_)) {
 +            // CraftBukkit start
 +            BlockState blockstate = blockList.m_8055_(p_296944_);
 +            FluidState fluidstate = blockList.m_6425_(p_296944_);
 +            // CraftBukkit end
-+            if (!spongeState.canBeHydrated(p_56808_, p_56809_, fluidstate, p_296944_)) {
++            if (!spongeState.canBeHydrated(p_56808_, p_56809_, fluidstate, p_279054_)) {
                 return false;
              } else {
                 Block block = blockstate.m_60734_();

@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/crafting/SmithingTrimRecipe.java
 +++ b/net/minecraft/world/item/crafting/SmithingTrimRecipe.java
-@@ -87,8 +_,15 @@
+@@ -94,8 +_,15 @@
     }
  
     public boolean m_142505_() {

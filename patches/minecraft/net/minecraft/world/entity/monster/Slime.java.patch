@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/entity/monster/Slime.java
 +++ b/net/minecraft/world/entity/monster/Slime.java
-@@ -130,6 +_,8 @@
+@@ -124,6 +_,8 @@
        if (this.m_20096_() && !this.f_33583_) {
           int i = this.m_33632_();
  
@@ -59,7 +59,7 @@
           if (p_219117_.m_188503_(10) == 0 && flag && p_219116_.m_123342_() < 40) {
              return m_217057_(p_219113_, p_219114_, p_219115_, p_219116_, p_219117_);
           }
-@@ -329,6 +_,12 @@
+@@ -319,6 +_,12 @@
     public EntityDimensions m_6972_(Pose p_33597_) {
        return super.m_6972_(p_33597_).m_20388_(0.255F * (float)this.m_33632_());
     }

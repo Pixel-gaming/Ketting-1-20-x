@@ -8,7 +8,7 @@
  
     public EnderDragon(EntityType<? extends EnderDragon> p_31096_, Level p_31097_) {
        super(EntityType.f_20565_, p_31097_);
-@@ -104,6 +_,15 @@
+@@ -102,6 +_,15 @@
        this.f_19794_ = true;
        this.f_19811_ = true;
        this.f_31074_ = new EnderDragonPhaseManager(this);
@@ -24,7 +24,7 @@
     }
  
     public void m_287231_(EndDragonFight p_287736_) {
-@@ -159,7 +_,11 @@
+@@ -157,7 +_,11 @@
        return adouble;
     }
  

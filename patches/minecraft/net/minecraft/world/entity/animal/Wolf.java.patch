@@ -70,7 +70,7 @@
              this.m_21839_(true);
              this.m_9236_().m_7605_(this, (byte)7);
           } else {
-@@ -404,7 +_,7 @@
+@@ -403,7 +_,7 @@
  
     public boolean m_6898_(ItemStack p_30440_) {
        Item item = p_30440_.m_41720_();

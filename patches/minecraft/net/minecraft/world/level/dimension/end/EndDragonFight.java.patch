@@ -46,7 +46,7 @@
     }
  
     public void m_64101_() {
-@@ -517,7 +_,14 @@
+@@ -513,7 +_,14 @@
              endcrystal.m_31052_((BlockPos)null);
           }
        }

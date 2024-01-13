@@ -12,10 +12,8 @@ import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.network.CommonListenerCookie;
 
-
-@Deprecated // TODO: Re-write this whole system to be less hacky. Use until we get a good replacement.
+//To be expanded for generic Mod fake players?
 public class FakePlayerFactory
 {
     private static final GameProfile MINECRAFT = new GameProfile(UUID.fromString("41C82C87-7AfB-4024-BA57-13D2C99CAE77"), "[Minecraft]");
@@ -37,18 +35,11 @@ public class FakePlayerFactory
     public static FakePlayer get(ServerLevel level, GameProfile username)
     {
         FakePlayerKey key = new FakePlayerKey(level, username);
-        return fakePlayers.computeIfAbsent(key, FakePlayerFactory::create);
+        return fakePlayers.computeIfAbsent(key, k -> new FakePlayer(k.level(), k.username()));
     }
 
     public static void unloadLevel(ServerLevel level)
     {
         fakePlayers.entrySet().removeIf(entry -> entry.getValue().level() == level);
-    }
-
-    private static FakePlayer create(FakePlayerKey key) {
-        var cookie  = CommonListenerCookie.createInitial(key.username());
-        var ret = new FakePlayer(key.level(), cookie.gameProfile(), cookie.clientInformation());
-        new FakePlayer.NetHandler(key.level().getServer(), ret, cookie);
-        return ret;
     }
 }

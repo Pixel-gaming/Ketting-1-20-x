@@ -44,13 +44,14 @@
        this.f_39450_ = p_39459_;
        this.m_38897_(new Slot(this.f_39449_, 0, 15, 47) {
           public int m_6641_() {
-@@ -54,7 +_,7 @@
+@@ -54,8 +_,8 @@
        });
        this.m_38897_(new Slot(this.f_39449_, 1, 35, 47) {
           public boolean m_5857_(ItemStack p_39517_) {
 -            return p_39517_.m_150930_(Items.f_42534_);
 +            return p_39517_.m_204117_(net.minecraftforge.common.Tags.Items.ENCHANTING_FUELS);
           }
+       });
  
           public Pair<ResourceLocation, ResourceLocation> m_7543_() {
 @@ -82,30 +_,34 @@

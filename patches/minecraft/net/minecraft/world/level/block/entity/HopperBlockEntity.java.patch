@@ -299,7 +299,7 @@
        BlockState blockstate = p_59348_.m_8055_(blockpos);
        Block block = blockstate.m_60734_();
        if (block instanceof WorldlyContainerHolder) {
-@@ -414,5 +_,14 @@
+@@ -411,5 +_,14 @@
  
     protected AbstractContainerMenu m_6555_(int p_59312_, Inventory p_59313_) {
        return new HopperMenu(p_59312_, p_59313_, this);

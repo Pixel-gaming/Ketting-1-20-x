@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/level/block/ChorusFlowerBlock.java
 +++ b/net/minecraft/world/level/block/ChorusFlowerBlock.java
-@@ -50,7 +_,7 @@
+@@ -43,7 +_,7 @@
        BlockPos blockpos = p_220982_.m_7494_();
        if (p_220981_.m_46859_(blockpos) && blockpos.m_123342_() < p_220981_.m_151558_()) {
           int i = p_220980_.m_61143_(f_51647_);

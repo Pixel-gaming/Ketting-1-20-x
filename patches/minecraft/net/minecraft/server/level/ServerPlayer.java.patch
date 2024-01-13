@@ -354,7 +354,7 @@
        } else {
           return portalinfo;
        }
-@@ -718,10 +_,32 @@
+@@ -718,10 +_,31 @@
  
     @Nullable
     public Entity m_5489_(ServerLevel p_9180_) {
@@ -376,8 +376,7 @@
 +   @Nullable
 +   public Entity changeDimension(ServerLevel p_9180_, net.minecraftforge.common.util.ITeleporter teleporter, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause cause) {
 +      // CraftBukkit end
-+      if (!net.minecraftforge.event.ForgeEventFactory.onTravelToDimension(this, p_9180_.m_46472_()))
-+         return null;
++      if (!net.minecraftforge.common.ForgeHooks.onTravelToDimension(this, p_9180_.m_46472_())) return null;
 +      if (this.m_5803_()) return this; // CraftBukkit - SPIGOT-3154
 +      // this.isChangingDimension = true; // CraftBukkit - Moved down and into PlayerList#changeDimension
        ServerLevel serverlevel = this.m_284548_();
@@ -476,7 +475,7 @@
 +            });//Forge: End vanilla logic
 +
 +            if (e != this) throw new java.lang.IllegalArgumentException(String.format(java.util.Locale.ENGLISH, "Teleporter %s returned not the player entity but instead %s, expected PlayerEntity %s", teleporter, e, this));
-             this.f_8906_.m_141995_(new ClientboundPlayerAbilitiesPacket(this.m_150110_()));
+             this.f_8906_.m_9829_(new ClientboundPlayerAbilitiesPacket(this.m_150110_()));
 -            playerlist.m_11229_(this, p_9180_);
 -            playerlist.m_11292_(this);
 +            playerList.m_11229_(this, levelRef.get());
@@ -488,11 +487,11 @@
  
 -            this.f_8906_.m_141995_(new ClientboundLevelEventPacket(1032, BlockPos.f_121853_, 0, false));
 +            if (teleporter.playTeleportSound(this, serverlevel, levelRef.get()))
-+               this.f_8906_.m_141995_(new ClientboundLevelEventPacket(1032, BlockPos.f_121853_, 0, false));
++               this.f_8906_.m_9829_(new ClientboundLevelEventPacket(1032, BlockPos.f_121853_, 0, false));
              this.f_8920_ = -1;
              this.f_8917_ = -1.0F;
              this.f_8918_ = -1;
-+            net.minecraftforge.event.ForgeEventFactory.onPlayerChangedDimension(this, resourcekey, levelRef.get().m_46472_());
++            net.minecraftforge.event.ForgeEventFactory.firePlayerChangedDimensionEvent(this, resourcekey, levelRef.get().m_46472_());
 +
 +            // CraftBukkit start
 +            org.bukkit.event.player.PlayerChangedWorldEvent changeEvent = new org.bukkit.event.player.PlayerChangedWorldEvent(this.getBukkitEntity(), serverlevel.getWorld());
@@ -606,7 +605,8 @@
           } else {
 -            this.m_9158_(this.m_9236_().m_46472_(), p_9115_, this.m_146908_(), false, true);
 +            this.setRespawnPosition(this.m_9236_().m_46472_(), blockposition, this.m_146908_(), false, true, org.bukkit.event.player.PlayerSpawnChangeEvent.Cause.BED); // CraftBukkit
-             if (this.m_9236_().m_46461_()) {
+-            if (this.m_9236_().m_46461_()) {
++            if (!net.minecraftforge.event.ForgeEventFactory.fireSleepingTimeCheck(this, optAt)) {
                 return Either.left(Player.BedSleepingProblem.NOT_POSSIBLE_NOW);
              } else {
                 if (!this.m_7500_()) {
@@ -670,7 +670,7 @@
     }
  
     public void m_5802_(BlockPos p_9190_) {
-@@ -879,6 +_,7 @@
+@@ -878,6 +_,7 @@
     }
  
     private boolean m_9116_(BlockPos p_9117_, Direction p_9118_) {
@@ -760,7 +760,7 @@
           if (abstractcontainermenu == null) {
              if (this.m_5833_()) {
                 this.m_5661_(Component.m_237115_("container.spectatorCantOpen").m_130940_(ChatFormatting.RED), true);
-@@ -957,9 +_,13 @@
+@@ -957,9 +_,14 @@
  
              return OptionalInt.empty();
           } else {
@@ -772,7 +772,8 @@
 +            // CraftBukkit end
 +
 +            this.m_143399_(abstractcontainermenu);
-+            net.minecraftforge.event.ForgeEventFactory.onPlayerOpenContainer(this, this.f_36096_);
++            //net.minecraftforge.event.ForgeEventFactory.onPlayerOpenContainer(this, this.f_36096_);
++            net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.f_36096_));
              return OptionalInt.of(this.f_8940_);
           }
        }
@@ -804,7 +805,7 @@
 -      this.f_36096_ = new HorseInventoryMenu(this.f_8940_, this.m_150109_(), p_9060_, p_9059_);
 +      this.f_36096_ = container; // CraftBukkit
        this.m_143399_(this.f_36096_);
-+      net.minecraftforge.event.ForgeEventFactory.onPlayerOpenContainer(this, this.f_36096_);
++      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(this, this.f_36096_));
     }
  
     public void m_6986_(ItemStack p_9082_, InteractionHand p_9083_) {
@@ -820,7 +821,7 @@
     public void m_9230_() {
        this.f_36096_.m_6877_(this);
        this.f_36095_.m_150414_(this.f_36096_);
-+      net.minecraftforge.event.ForgeEventFactory.onPlayerCloseContainer(this, this.f_36096_);
++      net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Close(this, this.f_36096_));
        this.f_36096_ = this.f_36095_;
     }
  
@@ -929,11 +930,12 @@
        }
  
        this.m_5616_(p_265059_);
-@@ -1216,6 +_,7 @@
+@@ -1216,6 +_,8 @@
     }
  
     public boolean m_143403_(GameType p_143404_) {
 +      p_143404_ = net.minecraftforge.common.ForgeHooks.onChangeGameType(this, this.f_8941_.m_9290_(), p_143404_);
++      if (p_143404_ == null) return false;
        if (!this.f_8941_.m_143473_(p_143404_)) {
           return false;
        } else {
@@ -954,12 +956,19 @@
        this.f_290755_ = p_297843_.f_290932_();
        this.f_291772_ = p_297843_.f_291199_();
        this.f_8922_ = p_297843_.f_291339_();
-@@ -1350,11 +_,13 @@
+@@ -1282,6 +_,7 @@
+       this.f_184127_ = p_9157_.f_195812_();
+       this.m_20088_().m_135381_(f_36089_, (byte)p_9157_.f_133867_());
+       this.m_20088_().m_135381_(f_36090_, (byte)(p_9157_.f_133868_() == HumanoidArm.LEFT ? 0 : 1));
++      this.language = p_9157_.f_133863_();
+    }
+ 
+    public boolean m_143432_() {
+@@ -1350,11 +_,12 @@
     public void m_9213_(@Nullable Entity p_9214_) {
        Entity entity = this.m_8954_();
        this.f_8926_ = (Entity)(p_9214_ == null ? this : p_9214_);
-+      while (this.f_8926_ instanceof net.minecraftforge.entity.PartEntity<?> partEntity)
-+         this.f_8926_ = partEntity.getParent(); // FORGE: fix MC-46486
++      while (this.f_8926_ instanceof net.minecraftforge.entity.PartEntity<?> partEntity) this.f_8926_ = partEntity.getParent(); // FORGE: fix MC-46486
        if (entity != this.f_8926_) {
           Level level = this.f_8926_.m_9236_();
           if (level instanceof ServerLevel) {
@@ -969,7 +978,7 @@
           }
  
           if (p_9214_ != null) {
-@@ -1389,7 +_,11 @@
+@@ -1380,7 +_,11 @@
  
     @Nullable
     public Component m_8957_() {
@@ -1031,7 +1040,7 @@
 +         this.gameMode.setLevel(p_9000_);
 +         this.server.getPlayerList().sendLevelInfo(this, p_9000_);
 +         this.server.getPlayerList().sendAllPlayerInfo(this);
-+         net.minecraftforge.event.ForgeEventFactory.onPlayerChangedDimension(this, serverlevel.dimension(), p_9000_.dimension());
++         net.minecraftforge.event.ForgeEventFactory.firePlayerChangedDimensionEvent(this, serverlevel.dimension(), p_9000_.dimension());
        }
 +      */
 +      this.getBukkitEntity().teleport(new org.bukkit.Location(p_9000_.getWorld(), p_9001_, p_9002_, p_9003_, p_9004_, p_9005_), cause);
@@ -1039,7 +1048,7 @@
  
     }
  
-@@ -1451,6 +_,35 @@
+@@ -1451,6 +_,34 @@
     }
  
     public void m_9158_(ResourceKey<Level> p_9159_, @Nullable BlockPos p_9160_, float p_9161_, boolean p_9162_, boolean p_9163_) {
@@ -1048,8 +1057,7 @@
 +   }
 +
 +   public void setRespawnPosition(ResourceKey<Level> p_9159_, @Nullable BlockPos p_9160_, float p_9161_, boolean p_9162_, boolean p_9163_, org.bukkit.event.player.PlayerSpawnChangeEvent.Cause cause) {
-+      if (net.minecraftforge.event.ForgeEventFactory.onPlayerSpawnSet(this, p_9160_ == null ? Level.f_46428_ : p_9159_, p_9160_, p_9162_))
-+         return;
++      if (net.minecraftforge.event.ForgeEventFactory.onPlayerSpawnSet(this, p_9160_ == null ? Level.f_46428_ : p_9159_, p_9160_, p_9162_)) return;
 +
 +      ServerLevel newWorld = this.f_8924_.m_129880_(p_9159_);
 +      org.bukkit.Location newSpawn = (p_9160_ != null) ? org.bukkit.craftbukkit.v1_20_R2.util.CraftLocation.toBukkit(p_9160_, newWorld.getWorld(), p_9161_, 0) : null;
@@ -1075,26 +1083,26 @@
        if (p_9160_ != null) {
           boolean flag = p_9160_.equals(this.f_8936_) && p_9159_.equals(this.f_8935_);
           if (p_9163_ && !flag) {
-@@ -1499,6 +_,9 @@
+@@ -1493,6 +_,8 @@
        if (itementity == null) {
           return null;
        } else {
-+         if (captureDrops() != null)
-+            captureDrops().add(itementity);
++         if (captureDrops() != null) captureDrops().add(itementity);
 +         else
           this.m_9236_().m_7967_(itementity);
           ItemStack itemstack = itementity.m_32055_();
           if (p_9087_) {
-@@ -1513,6 +_,75 @@
+@@ -1507,6 +_,76 @@
        }
     }
  
++   private String language = "en_us";
 +   /**
 +    * Returns the language last reported by the player as their local language.
 +    * Defaults to en_us if the value is unknown.
 +    */
 +   public String getLanguage() {
-+      return this.f_290755_;
++      return this.language;
 +   }
 +
 +   private Component tabListHeader = Component.m_237119_();
@@ -1141,7 +1149,7 @@
 +       this.tabListHeader = java.util.Objects.requireNonNull(header, "header");
 +       this.tabListFooter = java.util.Objects.requireNonNull(footer, "footer");
 +
-+       this.f_8906_.m_141995_(new net.minecraft.network.protocol.game.ClientboundTabListPacket(header, footer));
++       this.f_8906_.m_9829_(new net.minecraft.network.protocol.game.ClientboundTabListPacket(header, footer));
 +   }
 +
 +   // We need this as tablistDisplayname may be null even if the event was fired.
@@ -1161,7 +1169,7 @@
     public TextFilter m_8967_() {
        return this.f_8939_;
     }
-@@ -1572,11 +_,14 @@
+@@ -1566,11 +_,14 @@
  
     public boolean m_182294_(boolean p_182295_) {
        Inventory inventory = this.m_150109_();

@@ -45,7 +45,7 @@
 +      net.minecraftforge.event.ForgeEventFactory.onExplosionDetonate(this.f_46012_, this, list, f2);
        Vec3 vec3 = new Vec3(this.f_46013_, this.f_46014_, this.f_46015_);
  
-       for(Entity entity : list) {
+       for(int k2 = 0; k2 < list.size(); ++k2) {
 @@ -192,7 +_,39 @@
                    d9 /= d13;
                    double d14 = (double)m_46064_(vec3, entity);
@@ -167,7 +167,7 @@
                       }
  
                       blockstate.m_222967_(serverlevel, blockpos, ItemStack.f_41583_, flag1);
-@@ -261,8 +_,7 @@
+@@ -262,8 +_,7 @@
                    }
                 }
  

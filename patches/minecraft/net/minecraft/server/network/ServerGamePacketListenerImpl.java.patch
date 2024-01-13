@@ -1,9 +1,9 @@
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -179,6 +_,12 @@
- 
- public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl implements ServerGamePacketListener, ServerPlayerConnection, TickablePacketListener {
+@@ -185,6 +_,12 @@
+ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, TickablePacketListener, ServerGamePacketListener {
     static final Logger f_9744_ = LogUtils.getLogger();
+    private static final int f_143608_ = 15000;
 +   /**
 +    * Forge: Deprecated in favor of range/reach attributes.
 +    * @see net.minecraftforge.common.ForgeMod#BLOCK_REACH
@@ -143,7 +143,7 @@
              if (flag && (flag2 || !flag3)) {
                 entity.m_19890_(d0, d1, d2, f, f1);
 +               this.f_9743_.m_19890_(d3, d4, d5, this.f_9743_.m_146908_(), this.f_9743_.m_146909_()); // Forge - Resync player position on vehicle moving
-                this.m_141995_(new ClientboundMoveVehiclePacket(entity));
+                this.f_9742_.m_129512_(new ClientboundMoveVehiclePacket(entity));
                 return;
              }
 +
@@ -578,7 +578,7 @@
        BlockPos blockpos = p_9889_.m_134281_();
        this.f_9743_.m_9243_();
        ServerboundPlayerActionPacket.Action serverboundplayeractionpacket$action = p_9889_.m_134285_();
-@@ -960,14 +_,45 @@
+@@ -983,14 +_,45 @@
           case SWAP_ITEM_WITH_OFFHAND:
              if (!this.f_9743_.m_5833_()) {
                 ItemStack itemstack = this.f_9743_.m_21120_(InteractionHand.OFF_HAND);
@@ -656,7 +656,7 @@
        this.f_9743_.f_8906_.m_215201_(p_9930_.m_238008_());
        ServerLevel serverlevel = this.f_9743_.m_284548_();
        InteractionHand interactionhand = p_9930_.m_134703_();
-@@ -1012,7 +_,7 @@
+@@ -1035,7 +_,7 @@
           Vec3 vec3 = blockhitresult.m_82450_();
           BlockPos blockpos = blockhitresult.m_82425_();
           Vec3 vec31 = Vec3.m_82512_(blockpos);
@@ -665,7 +665,7 @@
              Vec3 vec32 = vec3.m_82546_(vec31);
              double d0 = 1.0000001D;
              if (Math.abs(vec32.m_7096_()) < 1.0000001D && Math.abs(vec32.m_7098_()) < 1.0000001D && Math.abs(vec32.m_7094_()) < 1.0000001D) {
-@@ -1020,7 +_,8 @@
+@@ -1043,7 +_,8 @@
                 this.f_9743_.m_9243_();
                 int i = this.f_9743_.m_9236_().m_151558_();
                 if (blockpos.m_123342_() < i) {
@@ -815,18 +815,21 @@
        if (m_215214_(p_9841_.f_133827_())) {
           this.m_294716_(Component.m_237115_("multiplayer.disconnect.illegal_characters"));
        } else {
-@@ -1135,9 +_,10 @@
+@@ -1187,9 +_,12 @@
                 }
  
                 CompletableFuture<FilteredText> completablefuture = this.m_243132_(playerchatmessage.m_245728_());
--               Component component = this.f_291389_.m_236742_().m_236961_(this.f_9743_, playerchatmessage.m_245692_());
-+               Component component = net.minecraftforge.common.ForgeHooks.onServerChatSubmittedEvent(this.f_9743_, playerchatmessage.m_245692_());
-                this.f_241681_.m_241849_((p_296593_) -> {
-                   return completablefuture.thenAcceptAsync((p_296589_) -> {
-+                     if (component == null) return;
-                      PlayerChatMessage playerchatmessage1 = playerchatmessage.m_241956_(component).m_243072_(p_296589_.f_243010_());
+-               CompletableFuture<Component> completablefuture1 = this.f_9745_.m_236742_().m_236961_(this.f_9743_, playerchatmessage.m_245692_());
++               CompletableFuture<Component> completablefuture1 = net.minecraftforge.common.ForgeHooks.getServerChatSubmittedDecorator().m_236961_(this.f_9743_, playerchatmessage.m_245692_());
+                this.f_241681_.m_241849_((p_248212_) -> {
+                   return CompletableFuture.allOf(completablefuture, completablefuture1).thenAcceptAsync((p_248218_) -> {
+-                     PlayerChatMessage playerchatmessage1 = playerchatmessage.m_241956_(completablefuture1.join()).m_243072_(completablefuture.join().f_243010_());
++                     Component decoratedContent = completablefuture1.join();
++                     if (decoratedContent == null)
++                        return; // Forge: ServerChatEvent was canceled if this is null.
++                     PlayerChatMessage playerchatmessage1 = playerchatmessage.m_241956_(decoratedContent).m_243072_(completablefuture.join().f_243010_());
                       this.m_243086_(playerchatmessage1);
-                   }, p_296593_);
+                   }, p_248212_);
 @@ -1147,6 +_,7 @@
  
        }
@@ -1717,3 +1720,11 @@
        }
     }
  
+@@ -1659,6 +_,7 @@
+    }
+ 
+    public void m_7423_(ServerboundCustomPayloadPacket p_9860_) {
++      net.minecraftforge.network.NetworkHooks.onCustomPayload(p_9860_, this.f_9742_);
+    }
+ 
+    public void m_7477_(ServerboundChangeDifficultyPacket p_9839_) {

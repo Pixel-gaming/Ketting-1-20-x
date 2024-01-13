@@ -146,17 +146,15 @@
        } else {
           this.f_8559_ = null;
        }
-@@ -232,6 +_,7 @@
-       this.f_286969_ = Objects.requireNonNullElseGet(p_288977_, () -> {
-          return this.m_8895_().m_164861_(RandomSequences.m_295760_(i), "random_sequences");
+@@ -240,6 +_,7 @@
+             return new RandomSequences(i);
+          }, "random_sequences");
        });
 +      this.initCapabilities();
     }
  
     /** @deprecated */
-@@ -265,13 +_,23 @@
-       profilerfiller.m_6182_("weather");
-       this.m_184096_();
+@@ -275,11 +_,21 @@
        int i = this.m_46469_().m_46215_(GameRules.f_151486_);
 +      long j;
 +
@@ -229,7 +227,7 @@
                    p_184065_.m_146870_();
                 } else {
                    profilerfiller.m_6180_("checkDespawn");
-@@ -329,12 +_,16 @@
+@@ -337,12 +_,16 @@
                       }
  
                       profilerfiller.m_6180_("tick");
@@ -274,6 +272,15 @@
              }
           }
        }
+@@ -430,7 +_,8 @@
+          BlockPos blockpos1 = this.m_5452_(Heightmap.Types.MOTION_BLOCKING, this.m_46496_(i, 0, j, 15));
+          BlockPos blockpos2 = blockpos1.m_7495_();
+          Biome biome = this.m_204166_(blockpos1).m_203334_();
++         if (this.isAreaLoaded(blockpos2, 1)) // Forge: check area to avoid loading neighbors in unloaded chunks
+          if (biome.m_47477_(this, blockpos2)) {
+             this.m_46597_(blockpos2, Blocks.f_50126_.m_49966_());
+          }
+ 
 @@ -461,8 +_,9 @@
        BlockPos blockpos = this.m_5452_(Heightmap.Types.MOTION_BLOCKING, p_300602_);
        BlockPos blockpos1 = blockpos.m_7495_();
@@ -501,7 +508,7 @@
 +      if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.EntityJoinLevelEvent(p_8854_, this))) return;
        Entity entity = this.m_142646_().m_142694_(p_8854_.m_20148_());
        if (entity != null) {
-          f_8566_.warn("Force-added player with duplicate UUID {}", (Object)p_8854_.m_20148_());
+          f_8566_.warn("Force-added player with duplicate UUID {}", (Object)p_8854_.m_20148_().toString());
 @@ -835,28 +_,56 @@
           this.m_143261_((ServerPlayer)entity, Entity.RemovalReason.DISCARDED);
        }
@@ -754,7 +761,7 @@
     }
  
     @Nullable
-@@ -1368,19 +_,42 @@
+@@ -1368,19 +_,43 @@
     }
  
     public static void m_8617_(ServerLevel p_8618_) {
@@ -795,7 +802,8 @@
 +
 +   protected void initCapabilities() {
 +      this.gatherCapabilities();
-+      capabilityData = net.minecraftforge.common.util.LevelCapabilityData.compute(this.m_8895_(), getCapabilities());
++      capabilityData = this.m_8895_().m_164861_(e -> net.minecraftforge.common.util.LevelCapabilityData.load(e, getCapabilities()), () -> new net.minecraftforge.common.util.LevelCapabilityData(getCapabilities()), net.minecraftforge.common.util.LevelCapabilityData.ID);
++      capabilityData.setCapabilities(getCapabilities());
     }
  
     public LevelEntityGetter<Entity> m_142646_() {

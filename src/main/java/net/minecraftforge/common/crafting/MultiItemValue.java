@@ -4,7 +4,7 @@
  */
 
 package net.minecraftforge.common.crafting;
-/*
+
 import java.util.Collection;
 import java.util.Collections;
 
@@ -54,4 +54,3 @@ public class MultiItemValue implements Value
     }
 
 }
-*/
