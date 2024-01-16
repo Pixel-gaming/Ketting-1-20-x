@@ -2,7 +2,7 @@
 +++ b/net/minecraft/world/entity/monster/EnderMan.java
 @@ -110,7 +_,17 @@
     }
-
+ 
     public void m_6710_(@Nullable LivingEntity p_32537_) {
 -      super.m_6710_(p_32537_);
 +      // CraftBukkit start - fire event
