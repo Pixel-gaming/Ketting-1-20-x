@@ -3,7 +3,7 @@
 @@ -101,6 +_,16 @@
        }
     };
-
+ 
 +   // CraftBukkit start - add fields and methods
 +   public org.bukkit.potion.PotionEffect getPrimaryEffect() {
 +      return (this.f_58652_ != null) ? org.bukkit.craftbukkit.v1_20_R2.potion.CraftPotionUtil.toBukkit(new MobEffectInstance(this.f_58652_, getLevel(this.f_58650_), getAmplification(f_58650_, f_58652_, f_58653_), true, true)) : null;
