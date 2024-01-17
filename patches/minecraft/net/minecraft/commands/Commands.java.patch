@@ -163,7 +163,7 @@
        RootCommandNode<SharedSuggestionProvider> rootcommandnode = new RootCommandNode<>();
        map.put(this.f_82090_.getRoot(), rootcommandnode);
 -      this.m_82112_(this.f_82090_.getRoot(), rootcommandnode, p_82096_.m_20203_(), map);
--      p_82096_.f_8906_.m_141995_(new ClientboundCommandsPacket(rootcommandnode));
+-      p_82096_.f_8906_.m_9829_(new ClientboundCommandsPacket(rootcommandnode));
 +
 +      net.minecraftforge.server.command.CommandHelper.mergeCommandNode(this.f_82090_.getRoot(), rootcommandnode, map, p_82096_.m_20203_(), ctx -> 0, suggest -> SuggestionProviders.m_121664_((com.mojang.brigadier.suggestion.SuggestionProvider<SharedSuggestionProvider>) (com.mojang.brigadier.suggestion.SuggestionProvider<?>) suggest));
 +
