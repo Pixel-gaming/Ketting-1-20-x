@@ -232,7 +232,7 @@
 +         return net.minecraftforge.common.ForgeHooks.getBurnTime(p_58343_, this.recipeType);
        }
     }
-
+ 
     private static int m_222692_(Level p_222693_, AbstractFurnaceBlockEntity p_222694_) {
 -      return p_222694_.f_222691_.m_213657_(p_222694_, p_222693_).map(AbstractCookingRecipe::m_43753_).orElse(200);
 +      return (p_222693_ != null) ? (Integer) p_222694_.f_222691_.m_213657_(p_222694_, p_222693_).map(AbstractCookingRecipe::m_43753_).orElse(200) : 200; // CraftBukkit - SPIGOT-4302
