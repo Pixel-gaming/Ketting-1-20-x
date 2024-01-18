@@ -837,7 +837,7 @@
              });
           }
  
-@@ -1216,11 +_,24 @@
+@@ -1216,20 +_,33 @@
     }
  
     private void m_246958_(ServerboundChatCommandPacket p_251139_, LastSeenMessages p_250484_) {
@@ -864,7 +864,7 @@
        } catch (SignedMessageChain.DecodeException signedmessagechain$decodeexception) {
           this.m_246889_(signedmessagechain$decodeexception);
           return;
-
+ 
        CommandSigningContext commandsigningcontext = new CommandSigningContext.SignedArguments(map);
 -      parseresults = Commands.m_242611_(parseresults, (p_242749_) -> {
 +      parseresults = Commands.<CommandSourceStack>m_242611_(parseresults, (p_242749_) -> { // CraftBukkit
